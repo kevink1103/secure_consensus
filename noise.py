@@ -32,24 +32,30 @@ class NoiseAlgo(Algorithm):
             self.__step1(k)
             self.__step2(k)
             self.__step3(k)
-        prnt(self.__agents_history, both=True)
+        # prnt(self.__agents_history, both=True)
 
     def plot(self):
         # reorganize
-        ys = [[] for i in range(len(self.__agents_history[0]))]
+        ys = [[] for i in range(len(self.__agents_history[0]))] # Empty
         for xs in self.__agents_history:
             for i, x in enumerate(xs):
                 ys[i].append(float(x))
         # error vector
-        zs = [[] for i in range(len(self.__agents_history[0]))]
+        zs = [[] for i in range(len(self.__agents_history[0]))] # Empty
         for i, y in enumerate(ys):
             z = np.array(y) - np.array(self.__init_avg)
             zs[i] = z.tolist()
+        # noise vector
+        ws = [[] for i in range(len(self.__noises[0]))] # Empty
+        for ww in self.__noises:
+            for i, w in enumerate(ww):
+                ws[i].append(float(w))
 
         # plot
-        plt.figure(num=None, figsize=(12, 6), dpi=100, facecolor='w', edgecolor='k')
+        size = [2, 2]
+        plt.figure(num=None, figsize=(10, 8), dpi=100, facecolor='w', edgecolor='k')
         # chart 1
-        plt.subplot(1, 2, 1)
+        plt.subplot(size[0], size[1], 1)
         plt.title('State Vector')
         x = np.arange(0, self.time, 1)
         for i, y in enumerate(ys):
@@ -61,7 +67,7 @@ class NoiseAlgo(Algorithm):
         plt.ylim([-3, 3])
         plt.legend()
         # chart 2
-        plt.subplot(1, 2, 2)
+        plt.subplot(size[0], size[1], 2)
         plt.title('Error Vector')
         for i, z in enumerate(zs):
             plt.plot(x, z, label='z{}(k)'.format(i+1))
@@ -71,10 +77,22 @@ class NoiseAlgo(Algorithm):
         plt.xlim([0, self.time])
         plt.ylim([-3, 3])
         plt.legend()
+        # chart 3
+        plt.subplot(size[0], size[1], 3)
+        plt.title('Noise Vector')
+        for i, w in enumerate(ws):
+            plt.plot(x, w, label='w{}(k)'.format(i+1))
+        plt.axhline(y=0, color='k', linestyle='dashed')
+        plt.xlabel('k')
+        plt.ylabel('wi(k)')
+        plt.xlim([0, self.time])
+        plt.ylim([-3, 3])
+        plt.legend()
 
         # show
         plt.tight_layout()
-        plt.show()
+        # plt.show()
+        plt.savefig("result/result.png")
     
     def __average(self, data):
         return sum(data) / len(data)
