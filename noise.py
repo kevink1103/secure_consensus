@@ -11,37 +11,26 @@ from pyprnt import prnt
 from algorithm import Algorithm
 
 class NoiseAlgo(Algorithm):
-    def __init__(self):
-        # Based on VI. NUMERICAL EXAMPLES
-
-        # Topology
-        #     1   2
-        #     |   |
-        # 4 - 5 - 3
-
-        self.A = (1 / 4) * np.matrix([
-            [2, 1, 0, 0, 1],
-            [1, 2, 1, 0, 0],
-            [0, 1, 2, 0, 1],
-            [0, 0, 0, 3, 1],
-            [1, 0, 1, 1, 1]
-        ])
-        self.phi = 0.9
-        self.agents = [-1.4, -0.8, 1.2, 0.7, -0.5] # by myself
-        self.time = 50
+    def __init__(self, A, phi, agents, time, tag):
+        self.A = A
+        self.phi = phi
+        self.agents = agents
+        self.time = time
+        self.tag = tag
         self.__agents_history = []
         self.__noises = []
         self.__init_avg = self.__average(self.agents)
 
-    def run(self):
+    def run(self, log=False):
         # Algorithm from III. PROBLEM FORMULATION
         for k in range(self.time): # this is step 4
             self.__step1(k)
             self.__step2(k)
             self.__step3(k)
-        # prnt(self.__agents_history, both=True)
+        if log:
+            prnt(self.__agents_history, both=True)
 
-    def plot(self):
+    def plot(self, show=False, save=False):
         # reorganize
         ys = [[] for i in range(len(self.__agents_history[0]))] # Empty
         for xs in self.__agents_history:
@@ -58,9 +47,10 @@ class NoiseAlgo(Algorithm):
             for i, w in enumerate(ww):
                 ws[i].append(float(w))
 
-        # plot
+        # PLOT
         size = [2, 2]
         plt.figure(num=None, figsize=(10, 8), dpi=100, facecolor='w', edgecolor='k')
+        plt.suptitle(self.tag)
         # chart 1
         plt.subplot(size[0], size[1], 1)
         plt.title('State Vector')
@@ -96,13 +86,14 @@ class NoiseAlgo(Algorithm):
         plt.ylim([-3, 3])
         plt.legend()
 
-        # show
-        plt.tight_layout()
-        # plt.show()
+        plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 
-        dirname = "result"
-        filename = "result"
-        plt.savefig(os.path.join(dirname, filename) + ".png")
+        if show:
+            plt.show()
+        if save and self.tag:
+            dirname = "result"
+            filename = "result_{}".format(self.tag)
+            plt.savefig(os.path.join(dirname, filename) + ".png")
     
     def __average(self, data):
         return sum(data) / len(data)
@@ -124,8 +115,9 @@ class NoiseAlgo(Algorithm):
         self.agents += self.__noises[k]
     
     def __step3(self, k):
-        reshaped_agents = np.reshape(np.array(self.agents), (5, 1))
+        length = len(self.agents)
+        reshaped_agents = np.reshape(np.array(self.agents), (length, 1))
         reshaped_agents = self.A * reshaped_agents
-        reshaped_agents = np.reshape(reshaped_agents, (1, 5)).tolist()[0]
+        reshaped_agents = np.reshape(reshaped_agents, (1, length)).tolist()[0]
         self.agents = reshaped_agents
         self.__agents_history.append(reshaped_agents)
