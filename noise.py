@@ -2,6 +2,7 @@
 # by Yilin Mo, Member, IEEE, Richard M. Murray, Fellow, IEEE
 # DOI 10.1109/TAC.2016.2564339, IEEE Transactions on Automatic Control
 
+import os
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,6 +13,12 @@ from algorithm import Algorithm
 class NoiseAlgo(Algorithm):
     def __init__(self):
         # Based on VI. NUMERICAL EXAMPLES
+
+        # Topology
+        #     1   2
+        #     |   |
+        # 4 - 5 - 3
+
         self.A = (1 / 4) * np.matrix([
             [2, 1, 0, 0, 1],
             [1, 2, 1, 0, 0],
@@ -92,7 +99,10 @@ class NoiseAlgo(Algorithm):
         # show
         plt.tight_layout()
         # plt.show()
-        plt.savefig("result/result.png")
+
+        dirname = "result"
+        filename = "result"
+        plt.savefig(os.path.join(dirname, filename) + ".png")
     
     def __average(self, data):
         return sum(data) / len(data)
