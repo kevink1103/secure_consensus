@@ -1,29 +1,43 @@
 from pyprnt import prnt
 
 from algorithm.Topology import *
+from algorithm.NormalAlgo import *
 from algorithm.NoiseAlgo import *
 
-def noise():
-    # topologies = [BasicMesh, Ring, Star, FullyConnected, Line, Tree]
-    topologies = [BasicMesh]
-    # phis = [float("0.{}".format(i)) for i in range(1, 10)] # 0 < φ < 1
-    phis = [0.9]
-    time = 50
+TOPOLOGIES = [Paper, Mesh, Ring, Star, FullyConnected, Line, Tree]
+# TOPOLOGIES = [Paper]
+TIME = 50
+# Log Option
+LOG = False
+# Plot Options
+SHOW = False
+SAVE = True
 
-    for topology in topologies:
-        topology = topology()
-        topology_name = topology.__class__.__name__
-        prnt(topology)
+def normal(topology):
+    tag = "{}".format(topology.name)
 
-        for phi in phis:
-            tag = "{}_φ{}".format(topology_name, phi)
+    algo = NormalAlgo(topology.A, topology.agents, TIME)
+    algo.run(log=LOG)
+    algo.plot(show=SHOW, save=SAVE, tag=tag)
 
-            algo = NoiseAlgo(topology.A, topology.agents, phi, time) # load data into algo
-            algo.run(log=False)
-            algo.plot(show=True, save=False, tag=tag)
+def noise(topology):
+    phis = [float("0.{}".format(i)) for i in range(1, 10)] # 0 < φ < 1
+    # phis = [0.9]
+
+    for phi in phis:
+        tag = "{}_φ{}".format(topology.name, phi)
+
+        algo = NoiseAlgo(topology.A, topology.agents, phi, TIME)
+        algo.run(log=LOG)
+        algo.plot(show=SHOW, save=SAVE, tag=tag)
 
 def main():
-    noise()
+    for topology in TOPOLOGIES:
+        topology = topology()
+        prnt(topology)
+
+        normal(topology)
+        noise(topology)
 
 if __name__ == "__main__":
     main()

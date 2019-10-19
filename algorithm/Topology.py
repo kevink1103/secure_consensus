@@ -5,7 +5,11 @@ class Topology():
         description = "{}, {}".format(self.__class__.__name__, self.agents)
         return description
 
-class BasicMesh(Topology):
+    @property
+    def name(self):
+        return self.__class__.__name__
+
+class Paper(Topology):
     ############## Based on VI. NUMERICAL EXAMPLES
     #  Topology  #
     #     1 - 2  #
@@ -19,6 +23,23 @@ class BasicMesh(Topology):
             [0, 1, 2, 0, 1],
             [0, 0, 0, 3, 1],
             [1, 0, 1, 1, 1]
+        ])
+        self.agents = [-1.4, -0.8, 1.2, 0.7, -0.5]
+
+class Mesh(Topology):
+    ##############
+    #  Topology  #
+    # 1 - 2 - 3  #
+    #  \ / \ /   #
+    #   5 - 4    #
+    ##############
+    def __init__(self):
+        self.A = (1 / 4) * np.matrix([
+            [2, 1, 0, 0, 1],
+            [1, 2, 1, 1, 1],
+            [0, 1, 2, 1, 0],
+            [0, 1, 1, 2, 1],
+            [1, 1, 0, 1, 2]
         ])
         self.agents = [-1.4, -0.8, 1.2, 0.7, -0.5]
 
