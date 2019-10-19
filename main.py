@@ -1,40 +1,29 @@
-import numpy as np
+from pyprnt import prnt
 
-from noise import NoiseAlgo
+from algorithm.Topology import *
+from algorithm.NoiseAlgo import *
 
-# Based on VI. NUMERICAL EXAMPLES
-##############
-# Topology A #
-#      1   2 #
-#      |   | #
-#  4 - 5 - 3 #
-##############
-A = (1 / 4) * np.matrix([
-    [2, 1, 0, 0, 1],
-    [1, 2, 1, 0, 0],
-    [0, 1, 2, 0, 1],
-    [0, 0, 0, 3, 1],
-    [1, 0, 1, 1, 1]
-])
-##############
-# Topology B #
-#    1 - 2   #
-#    |   |   #
-#    4 - 3   #
-##############
-B = (1 / 4) * np.matrix([
-    [2, 1, 0, 1],
-    [1, 2, 1, 0],
-    [0, 1, 2, 1],
-    [1, 0, 1, 2],
-])
-phis = np.arange(0.1, 1, 0.1) # 0 < φ < 1
-agents = [-1.4, -0.8, 1.2, 0.7, -0.5]
-time = 50
-print(phis)
+def noise():
+    # topologies = [BasicMesh, Ring, Star, FullyConnected, Line, Tree]
+    topologies = [BasicMesh]
+    # phis = [float("0.{}".format(i)) for i in range(1, 10)] # 0 < φ < 1
+    phis = [0.9]
+    time = 50
 
-for phi in phis:
-    tag = "φ{}".format(phi)
-    algo = NoiseAlgo(B, phi, agents, time, tag)
-    algo.run()
-    algo.plot(show=True, save=False)
+    for topology in topologies:
+        topology = topology()
+        topology_name = topology.__class__.__name__
+        prnt(topology)
+
+        for phi in phis:
+            tag = "{}_φ{}".format(topology_name, phi)
+
+            algo = NoiseAlgo(topology.A, topology.agents, phi, time) # load data into algo
+            algo.run(log=False)
+            algo.plot(show=True, save=False, tag=tag)
+
+def main():
+    noise()
+
+if __name__ == "__main__":
+    main()

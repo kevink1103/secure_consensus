@@ -3,6 +3,7 @@
 # DOI 10.1109/TAC.2016.2564339, IEEE Transactions on Automatic Control
 
 import os
+import copy
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,15 +12,14 @@ from pyprnt import prnt
 from algorithm import Algorithm
 
 class NoiseAlgo(Algorithm):
-    def __init__(self, A, phi, agents, time, tag):
+    def __init__(self, A, agents, phi, time):
         self.A = A
-        self.phi = phi
         self.agents = agents
+        self.phi = phi
         self.time = time
-        self.tag = tag
-        self.__agents_history = []
-        self.__noises = []
         self.__init_avg = self.__average(self.agents)
+        self.__noises = []
+        self.__agents_history = []
 
     def run(self, log=False):
         # Algorithm from III. PROBLEM FORMULATION
@@ -28,9 +28,12 @@ class NoiseAlgo(Algorithm):
             self.__step2(k)
             self.__step3(k)
         if log:
-            prnt(self.__agents_history, both=True)
+            prnt(self.__agents_history)
 
-    def plot(self, show=False, save=False):
+    def plot(self, show=False, save=False, tag="figure"):
+        if len(self.__noises) == 0 or len(self.__agents_history) == 0:
+            return
+
         # reorganize
         ys = [[] for i in range(len(self.__agents_history[0]))] # Empty
         for xs in self.__agents_history:
@@ -46,11 +49,18 @@ class NoiseAlgo(Algorithm):
         for ww in self.__noises:
             for i, w in enumerate(ww):
                 ws[i].append(float(w))
+        # noise sum vector
+        vs = copy.deepcopy(ws)
+        for vv in vs:
+            for i, v in enumerate(vv):
+                if i == 0:
+                    continue
+                vv[i] += vv[i-1]
 
         # PLOT
         size = [2, 2]
         plt.figure(num=None, figsize=(10, 8), dpi=100, facecolor='w', edgecolor='k')
-        plt.suptitle(self.tag)
+        plt.suptitle(tag)
         # chart 1
         plt.subplot(size[0], size[1], 1)
         plt.title('State Vector')
@@ -85,14 +95,25 @@ class NoiseAlgo(Algorithm):
         plt.xlim([0, self.time])
         plt.ylim([-3, 3])
         plt.legend()
+        # chart 4
+        plt.subplot(size[0], size[1], 4)
+        plt.title('Noise Sum Vector')
+        for i, w in enumerate(vs):
+            plt.plot(x, w, label='v{}(k)'.format(i+1))
+        plt.axhline(y=0, color='k', linestyle='dashed')
+        plt.xlabel('k')
+        plt.ylabel('vi(k)')
+        plt.xlim([0, self.time])
+        plt.ylim([-3, 3])
+        plt.legend()
 
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 
         if show:
             plt.show()
-        if save and self.tag:
+        if save:
             dirname = "result"
-            filename = "result_{}".format(self.tag)
+            filename = "noise_{}".format(tag)
             plt.savefig(os.path.join(dirname, filename) + ".png")
     
     def __average(self, data):
