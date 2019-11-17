@@ -4,14 +4,14 @@ from algorithm.Topology import *
 from algorithm.NormalAlgo import *
 from algorithm.NoiseAlgo import *
 
-TOPOLOGIES = [Paper, Mesh, Ring, Star, FullyConnected, Line, Tree]
-# TOPOLOGIES = [Paper]
+# TOPOLOGIES = [Paper, Mesh, Ring, Star, FullyConnected, Line, Tree]
+TOPOLOGIES = [Paper]
 TIME = 50
 # Log Option
 LOG = False
 # Plot Options
-SHOW = False
-SAVE = True
+SHOW = True
+SAVE = False
 
 def normal(topology):
     tag = "{}".format(topology.name)
@@ -21,8 +21,8 @@ def normal(topology):
     algo.plot(show=SHOW, save=SAVE, tag=tag)
 
 def noise(topology):
-    phis = [float("0.{}".format(i)) for i in range(1, 10)] # 0 < φ < 1
-    # phis = [0.9]
+    # phis = [float("0.{}".format(i)) for i in range(1, 10)] # 0 < φ < 1
+    phis = [0.9]
 
     for phi in phis:
         tag = "{}_φ{}".format(topology.name, phi)
@@ -36,7 +36,7 @@ def main():
         topology = topology()
         prnt(topology)
 
-        normal(topology)
+        # normal(topology)
         noise(topology)
 
 if __name__ == "__main__":

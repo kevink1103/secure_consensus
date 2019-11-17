@@ -123,7 +123,7 @@ class NoiseAlgo(Algorithm):
 
     def __random(self, size=1):
         mean = 0
-        variance = 1
+        variance = 1 # vi(k) = 1
         stdev = math.sqrt(variance) # Var(vi(k)) = σ^2, σ = √(Var(vi(k)))
         # Gaussian / Normal Distribution
         return np.random.normal(mean, stdev, size)
