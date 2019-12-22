@@ -3,6 +3,7 @@ from pyprnt import prnt
 from algorithm.Topology import *
 from algorithm.NormalAlgo import *
 from algorithm.NoiseAlgo import *
+from algorithm.CryptoAlgo import *
 
 # TOPOLOGIES = [Paper, Mesh, Ring, Star, FullyConnected, Line, Tree]
 TOPOLOGIES = [Paper]
@@ -31,13 +32,19 @@ def noise(topology):
         algo.run(log=LOG)
         algo.plot(show=SHOW, save=SAVE, tag=tag)
 
+def crypto():
+    agents = [1, 2, 4, 8]
+    algo = CryptoAlgo(agents, 50)
+    algo.run(log=LOG)
+
 def main():
     for topology in TOPOLOGIES:
-        topology = topology()
-        prnt(topology)
+        # topology = topology()
+        # prnt(topology)
 
         # normal(topology)
-        noise(topology)
+        # noise(topology)
+    # crypto()
 
 if __name__ == "__main__":
     main()
