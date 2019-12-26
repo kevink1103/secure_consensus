@@ -6,10 +6,10 @@ from algorithm.NoiseAlgo import *
 from algorithm.CryptoAlgo import *
 
 # TOPOLOGIES = [Paper, Mesh, Ring, Star, FullyConnected, Line, Tree]
-TOPOLOGIES = [Paper]
-TIME = 50
+TOPOLOGIES = [Tree]
+TIME = 60
 # Log Option
-LOG = False
+LOG = True
 # Plot Options
 SHOW = True
 SAVE = False
@@ -24,7 +24,7 @@ def normal(topology):
 def noise(topology):
     # phis = [float("0.{}".format(i)) for i in range(1, 10)] # 0 < φ < 1
     phis = [0.9]
-
+    
     for phi in phis:
         tag = "{}_φ{}".format(topology.name, phi)
 
@@ -39,11 +39,11 @@ def crypto():
 
 def main():
     for topology in TOPOLOGIES:
-        # topology = topology()
+        topology = topology()
         # prnt(topology)
 
         # normal(topology)
-        # noise(topology)
+        noise(topology)
     # crypto()
 
 if __name__ == "__main__":

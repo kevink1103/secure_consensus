@@ -22,6 +22,8 @@ class SimplePaillier:
 
     def encrypt(self, plaintext):
         m = plaintext
+        # consider shifting to the m (plaintext)
+        
         n = self.public_key
         assert 0 <= m < n
 
@@ -33,7 +35,8 @@ class SimplePaillier:
         # The ciphertext is given by
         # c = (n+1)^m * r^n * mod n^2
         c = (pow(n+1, m, n**2) * pow(r, n, n**2)) % n**2
-        assert c <= n**2
+        assert 0 <= c < n**2
+        assert math.gcd(c, n**2) == 1
         return c
 
     def decrypt(self, c):
@@ -125,5 +128,12 @@ class CryptoAlgo(Algorithm):
 
 
 if __name__ == "__main__":
-    algo = CryptoAlgo([1, 2, 4, 8], 1)
-    algo.run()
+    # algo = CryptoAlgo([1, 2, 4, 8], 1)
+    # algo.run()
+    key = SimplePaillier()
+    prnt(key.public_key)
+    prnt(list(key.private_key))
+    c = key.encrypt(12)
+    print(c)
+    m = key.decrypt(c)
+    print(m)

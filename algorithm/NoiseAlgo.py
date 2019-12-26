@@ -20,6 +20,7 @@ class NoiseAlgo(Algorithm):
         self.__init_avg = self.__average(self.agents)
         self.__noises = []
         self.__agents_history = []
+        self.__consensus = 0
 
     def run(self, log=False):
         # Algorithm from III. PROBLEM FORMULATION
@@ -35,20 +36,11 @@ class NoiseAlgo(Algorithm):
             raise AssertionError("empty data to plot")
 
         # reorganize
-        ys = [[] for i in range(len(self.__agents_history[0]))] # Empty
-        for xs in self.__agents_history:
-            for i, x in enumerate(xs):
-                ys[i].append(float(x))
+        ys = np.array(self.__agents_history).T
         # error vector
-        zs = [[] for i in range(len(self.__agents_history[0]))] # Empty
-        for i, y in enumerate(ys):
-            z = np.array(y) - np.array(self.__init_avg)
-            zs[i] = z.tolist()
+        zs = ys - np.array(self.__init_avg)
         # noise vector
-        ws = [[] for i in range(len(self.__noises[0]))] # Empty
-        for ww in self.__noises:
-            for i, w in enumerate(ww):
-                ws[i].append(float(w))
+        ws = np.array(self.__noises).T
         # noise sum vector
         vs = copy.deepcopy(ws)
         for vv in vs:
@@ -69,6 +61,7 @@ class NoiseAlgo(Algorithm):
         for i, y in enumerate(ys):
             plt.plot(x, y, label='x{}(k)'.format(i+1))
         plt.axhline(y=self.__init_avg, color='k', linestyle='dashed')
+        plt.plot(self.__consensus, self.__init_avg, marker='x', markersize=10, color="black")
         plt.xlabel('k')
         plt.ylabel('xi(k)')
         plt.xlim([0, self.time])
@@ -80,6 +73,7 @@ class NoiseAlgo(Algorithm):
         for i, z in enumerate(zs):
             plt.plot(x, z, label='z{}(k)'.format(i+1))
         plt.axhline(y=0, color='k', linestyle='dashed')
+        plt.plot(self.__consensus, 0, marker='x', markersize=10, color="black")
         plt.xlabel('k')
         plt.ylabel('zi(k)')
         plt.xlim([0, self.time])
@@ -91,6 +85,7 @@ class NoiseAlgo(Algorithm):
         for i, w in enumerate(ws):
             plt.plot(x, w, label='w{}(k)'.format(i+1))
         plt.axhline(y=0, color='k', linestyle='dashed')
+        plt.plot(self.__consensus, 0, marker='x', markersize=10, color="black")
         plt.xlabel('k')
         plt.ylabel('wi(k)')
         plt.xlim([0, self.time])
@@ -102,6 +97,7 @@ class NoiseAlgo(Algorithm):
         for i, w in enumerate(vs):
             plt.plot(x, w, label='v{}(k)'.format(i+1))
         plt.axhline(y=0, color='k', linestyle='dashed')
+        plt.plot(self.__consensus, 0, marker='x', markersize=10, color="black")
         plt.xlabel('k')
         plt.ylabel('vi(k)')
         plt.xlim([0, self.time])
@@ -117,7 +113,7 @@ class NoiseAlgo(Algorithm):
         if show:
             plt.show()
         plt.clf()
-    
+
     def __average(self, data):
         return sum(data) / len(data)
 
@@ -136,7 +132,13 @@ class NoiseAlgo(Algorithm):
         if k == 0:
             self.__noises[k] = self.__noises[0]
         else:
-            self.__noises[k] = ((self.phi ** k) * self.__noises[k]) - ((self.phi ** (k-1)) * self.__noises[k-1])
+            w = ((self.phi ** k) * self.__noises[k]) - ((self.phi ** (k-1)) * self.__noises[k-1])
+            # decide negative or positive for this noise
+            # to achieve asymptotic sum of 0
+            agent_sums = np.array(self.__noises[:-1]).sum(axis=0)
+            signs = [1 if agent_sum <= 0 else -1 for agent_sum in agent_sums]
+            w = np.absolute(w) * signs
+            self.__noises[k] = w
         self.agents += self.__noises[k]
     
     def __step3(self, k):
@@ -146,3 +148,10 @@ class NoiseAlgo(Algorithm):
         reshaped_agents = np.reshape(reshaped_agents, (1, length)).tolist()[0]
         self.agents = reshaped_agents
         self.__agents_history.append(reshaped_agents)
+
+        # check if consensus is made
+        reshaped_agents = ["{0:.2f}".format(agent) for agent in reshaped_agents]
+        agents_average = "{0:.2f}".format(self.__init_avg)
+        if all(agent == agents_average for agent in reshaped_agents):
+            self.__consensus = k if self.__consensus == 0 else self.__consensus
+

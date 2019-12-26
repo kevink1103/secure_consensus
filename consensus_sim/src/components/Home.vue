@@ -78,7 +78,7 @@ input {
 }
 button {
   background-color: #363472;
-  height: 60px;
+  height: 65px;
   margin-top: 30px;
   margin-bottom: 40px;
 }
