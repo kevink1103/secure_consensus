@@ -1,4 +1,4 @@
-# consensus_sim
+# consensus_simulation
 
 > secure and privacy-preserving consensus simulation
 
