@@ -5,6 +5,7 @@
 import os
 import copy
 import math
+
 import numpy as np
 import matplotlib.pyplot as plt
 from pyprnt import prnt
@@ -140,7 +141,7 @@ class NoiseAlgo(Algorithm):
             w = np.absolute(w) * signs
             self.__noises[k] = w
         self.agents += self.__noises[k]
-    
+
     def __step3(self, k):
         length = len(self.agents)
         reshaped_agents = np.reshape(np.array(self.agents), (length, 1))

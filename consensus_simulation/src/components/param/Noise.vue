@@ -6,7 +6,6 @@
     <b-form-input id="time" v-model="time" type="range" min="0" max="100"></b-form-input>
     <div class="mt-1">n: {{ time }}</div>
     
-
     <br>
 
     <label for="phi"><h5>Set phi (φ).</h5></label>
@@ -21,7 +20,7 @@ export default {
   data () {
     return {
       time: '50',
-      phi: '0.9'
+      phi: '0.1-0.9'
     }
   }
 }

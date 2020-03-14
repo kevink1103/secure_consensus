@@ -13,14 +13,14 @@
         name="radio-btn-outline"
       ></b-form-radio-group>
     </b-form-group>
-    <p v-if="selected == 'normal'">
+    <p v-if="selected=='normal'">
       This is a normal algorithm that no privacy-preserving method is applied.
     </p>
-    <p v-if="selected == 'noise'">
+    <p v-if="selected=='noise'">
       This is a privacy-preserving average consensus algorithm that injects noises to initial states.<br>
       <a href="https://yilinmo.github.io/public/papers/tac2014privacy.pdf">Algorithm Reference</a>
     </p>
-    <p v-if="selected == 'crypto'">
+    <p v-if="selected=='crypto'">
       This is a privacy-preserving average consensus algorithm that facilitates Simple Paillier cryptosystem.<br>
       <a href="https://arxiv.org/pdf/1707.04491.pdf">Algorithm Reference</a>
     </p>
@@ -32,12 +32,12 @@
         name="fade"
         mode="out-in"
       >
-      <Normal v-if="selected == 'normal'"/>
-      <Noise v-else-if="selected == 'noise'"/>
-      <Crypto v-else-if="selected == 'crypto'"/>
+      <Normal v-if="selected=='normal'" ref="normal"/>
+      <Noise v-else-if="selected=='noise'" ref="noise"/>
+      <Crypto v-else-if="selected=='crypto'" ref="crypto"/>
     </transition>
 
-    <b-button block size="lg"><h3>Run Simulation</h3></b-button>
+    <b-button @click="submit" block><h3>Run Simulation</h3></b-button>
   </div>
 </template>
 
@@ -63,9 +63,11 @@ export default {
         { text: 'Noise', value: 'noise' },
         { text: 'Crypto', value: 'crypto' }
       ],
-      time: '25',
-      phi: '0.9',
-      msg: 'Welcome to Your Vue.js App'
+    }
+  },
+  methods: {
+    submit() {
+      console.log(this.$refs["normal"].$data)
     }
   }
 }
