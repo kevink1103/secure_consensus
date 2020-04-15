@@ -36,15 +36,15 @@ def crypto(topology):
     agents = [1, 2, 4, 8, 2]
     epsilon = 0.5
 
-    algo = CryptoAlgo(topology.A, agents, epsilon, 2) # fix this line later
+    algo = CryptoAlgo(topology.A, agents, epsilon, 1) # fix this line later
     algo.run(log=LOG)
 
 def main():
     for topology in TOPOLOGIES:
         topology = topology()
-        # prnt(topology)
+        #  prnt(topology)
 
-        # normal(topology)
+        #  normal(topology)
         #  noise(topology)
         crypto(topology)
 

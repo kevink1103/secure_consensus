@@ -5,7 +5,7 @@
 import os
 import math
 import random
-from decimal import Decimal, Context, MAX_EMAX
+from decimal import Decimal
 from decimal import getcontext
 getcontext().prec = 1000
 
@@ -127,30 +127,20 @@ class CryptoAlgo(Algorithm):
         return [SimplePaillier() for i in range(len(agents))]
 
     def __process(self, k):
-        Q = 10 ** 2
         new_states = []
 
         for i, v1 in enumerate(self.agents):
 
             v1_key = self.keys[i]
-
-            v1 *= Q
-
-            delta = len([con for idx, con in enumerate(self.A[i].tolist()[0]) if i != idx and con > 0])
-            a_lower, a_upper = self.__generate_admissable_range(delta)
-
             weighted_diffs = []
 
             for j, v2 in enumerate(self.agents):
-                if i == j:
+                if v1 == v2:
                     continue
 
                 v2_key = self.keys[j]
 
-                v2 *= Q
-
-                ai_j, aj_i = self.__generate_weight(k, a_lower, a_upper, self.A[i, i])
-                ai_j, aj_i = int(ai_j * Q), int(aj_i * Q)
+                ai_j, aj_i = self.__generate_weight(k, self.A[i, j])
 
                 prnt("begin", [v1, v2])
 
@@ -176,6 +166,7 @@ class CryptoAlgo(Algorithm):
 
                 # Step 5
                 # Multiply the Weight (in ciphertext)
+                # Result becomes Decimal from here
                 step5_v1, step5_v2 = self.__step5(k, step4_v1, ai_j, step4_v2, aj_i)
                 prnt("step5", [step5_v1, step5_v2])
 
@@ -193,69 +184,52 @@ class CryptoAlgo(Algorithm):
                 # Multiply the Weight (in plaintext)
                 step8_v1, step8_v2 = self.__step8(k, ai_j, step7_v1, aj_i, step7_v2)
                 prnt("step8", [step8_v1, step8_v2])
+                prnt("step8", [int(step8_v1), int(step8_v2)])
 
-                weight_v1 = Decimal(step8_v1) / Decimal(Q)
-
-                print("WEIGHT")
-                print(weight_v1)
-                print()
-
-                weighted_diffs.append(weight_v1)
+                weighted_diffs.append(step8_v1)
 
             # Update Rule (3)
             print(weighted_diffs)
-            print()
-
-            weight_sum = Decimal(0)
-            for n in weighted_diffs:
-                weight_sum += n
-            new_state = Decimal(v1 / Q) + Decimal(Decimal(self.epsilon) * weight_sum)
-            print(new_state)
+            new_state = v1 + (self.epsilon * sum(weighted_diffs))
+            print(int(new_state))
             break
 
     def __step1(self, k, v1, v2, v1_key, v2_key):
-        neg_v1 = self.__twos_complement(-v1)
-        neg_v2 = self.__twos_complement(-v2)
-        step1_v1 = v1_key.encrypt(neg_v1)
-        step1_v2 = v2_key.encrypt(neg_v2)
-        return step1_v1, step1_v2
+        print("BEFORE")
+        prnt([v1, v2])
+        v1 = self.__twos_complement(-v1)
+        v2 = self.__twos_complement(-v2)
+        print("COMPED")
+        prnt([v1, v2])
+
+        return v1_key.encrypt(v1), v2_key.encrypt(v2)
 
     def __step2(self, k, step1_v1, step1_v2):
-        step2_v1 = step1_v2
-        step2_v2 = step1_v1
-        return step2_v1, step2_v2
+        return step1_v2, step1_v1
 
     def __step3(self, k, v1, v2, v1_key, v2_key):
-        step3_v1 = v2_key.encrypt(v1)
-        step3_v2 = v1_key.encrypt(v2)
-        return step3_v1, step3_v2
+        return v2_key.encrypt(v1), v1_key.encrypt(v2)
 
     def __step4(self, k, step3_v1, step2_v1, step3_v2, step2_v2):
-        step4_v1 = step3_v1 * step2_v1
-        step4_v2 = step3_v2 * step2_v2
-        return step4_v1, step4_v2
+        print("HERE1")
+        prnt([step3_v1, step2_v1], [step3_v2, step2_v2])
+        return step3_v1 * step2_v1, step3_v2 * step2_v2
 
     def __step5(self, k, step4_v1, ai_j, step4_v2, aj_i):
-        prnt([step4_v1, step4_v2], both=True)
-        prnt([ai_j, aj_i])
-        step5_v1 = step4_v1 ** ai_j
-        step5_v2 = step4_v2 ** aj_i
-        return step5_v1, step5_v2
+        step5_v1 = Decimal(step4_v1) ** Decimal(ai_j)
+        step5_v2 = Decimal(step4_v2) ** Decimal(aj_i)
+        prnt([step5_v1, step5_v2])
+        return int(step5_v1), int(step5_v2)
 
     def __step6(self, k, step5_v1, step5_v2):
-        step6_v1 = step5_v2
-        step6_v2 = step5_v1
-        return step6_v1, step6_v2
+        return step5_v2, step5_v1
 
     def __step7(self, k, step6_v1, step6_v2, v1_key, v2_key):
-        step7_v1 = self.__decrypt_mul(v1_key, step6_v1)
-        step7_v2 = self.__decrypt_mul(v2_key, step6_v2)
-        return step7_v1, step7_v2
+        return self.__decrypt_mul(v1_key, step6_v1), self.__decrypt_mul(v2_key, step6_v2)
+        #  return v1_key.decrypt(step6_v1), v2_key.decrypt(step6_v2)
 
     def __step8(self, k, ai_j, step7_v1, aj_i, step7_v2):
-        step8_v1 = ai_j * step7_v1
-        step8_v2 = aj_i * step7_v2
-        return step8_v1, step8_v2
+        return ai_j * step7_v1, aj_i * step7_v2
 
     def __twos_complement(self, val):
         nbits = 64
@@ -274,37 +248,38 @@ class CryptoAlgo(Algorithm):
         return val
 
     def __decrypt_mul(self, key, mul):
-        ans = key.decrypt(mul)
-
-        if len(bin(ans)[2:]) > 64:
-            ans = int(bin(ans)[2:][-64:], 2)
+        ans = key.decrypt(mul) if len(bin(ans)[2:]) > 64: ans = int(bin(ans)[2:][-64:], 2)
         elif len(bin(ans)[2:]) == 64:
             ans = self.__twos_complement(ans)
         return ans
 
-    def __generate_admissable_range(self, delta):
+    def __generate_weight(self, k, aij):
+        if k == 0:
+            ai_j = random.random()
+            #  aj_i = aij / ai_r
+            aj_i = random.random()
+            return ai_j, aj_i
+
+        # get admissible range
         a_lower = None
         a_upper = None
-        max_range = 1 / (math.sqrt(self.epsilon * delta))
+        delta = 1
+        max_range = 1 / (math.sqrt(self.epsilon) * delta)
 
         while True:
             # random.uniform() returns random from [a, b]
             a_lower = random.uniform(0, max_range)
             a_upper = random.uniform(0, max_range)
-            if 0 < a_lower < a_upper < max_range:
-                return a_lower, a_upper
+            if 0 < a_lower < a_upper:
+                break
 
-    def __generate_weight(self, k, a_lower, a_upper, aij):
-        while True:
-            if k == 0:
-                ai_j = random.random()
-                aj_i = random.random()
-                #  aj_i = aij / ai_j
-            else:
-                ai_j = random.uniform(a_lower, a_upper)
-                aj_i = aij / ai_j
-            if ai_j > 0 and aj_i > 0:
-                return ai_j, aj_i
+            if 0 < a_lower < a_upper:H
+        print(a_lower, a_upper)
+        ai_j = random.uniform(a_lower, a_upper)
+        aj_i = aij / ai_j
+        print(ai_j, aj_i)
+
+        return ai_j, aj_i
 
 
 if __name__ == "__main__":
@@ -324,13 +299,13 @@ if __name__ == "__main__":
             val *= -1
         return val
 
-    def decrypt_mul(key, mul):
+    def decrypt_mul(mul):
         ans = key.decrypt(mul)
 
         if len(bin(ans)[2:]) > 64:
             ans = int(bin(ans)[2:][-64:], 2)
         elif len(bin(ans)[2:]) == 64:
-            ans = self.__twos_complement(ans)
+            ans = twos_complement(ans)
         return ans
 
     key = SimplePaillier()
@@ -349,17 +324,13 @@ if __name__ == "__main__":
 
     print()
 
-    print("HERE WE GO")
 
-    key
+    print("HERE WE GO")
 
     a = 9
     #  a = twos_complement(-5)
     #  b = 8
     b = twos_complement(-8)
-
-    a, b = a*100, b*100
-
     print("m", a, b)
 
     e_a = key.encrypt(a)
@@ -367,28 +338,10 @@ if __name__ == "__main__":
     print("dm", key.decrypt(e_a), key.decrypt(e_b))
 
     mul = e_a * e_b
-    print(e_a)
-    print()
-    print(mul)
-    print()
-
-    ans = decrypt_mul(key, mul)
+    ans = decrypt_mul(mul)
     print(ans)
-    print()
 
-    t = mul ** int(0.25 * 100)
-    ans = decrypt_mul(key, t)
+    mul = e_a ** 3
+    ans = key.decrypt(mul)
     print(ans)
-    print()
-
-    t = Decimal(mul) ** Decimal(0.25 * 100)
-    ans = decrypt_mul(key, int(t))
-    print(ans)
-    print(bin(ans))
-    print()
-
-    t = mul ** int(0.25 * (10 ** 4))
-    ans = decrypt_mul(key, int(t))
-    print(ans)
-    print(bin(ans))
 
