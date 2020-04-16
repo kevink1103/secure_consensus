@@ -36,7 +36,7 @@ def crypto(topology):
     agents = [1, 2, 4, 8, 2]
     epsilon = 0.5
 
-    algo = CryptoAlgo(topology.A, agents, epsilon, 1) # fix this line later
+    algo = CryptoAlgo(topology.A, agents, epsilon, 40) # fix this line later
     algo.run(log=LOG)
 
 def main():
