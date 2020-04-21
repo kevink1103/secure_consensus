@@ -5,48 +5,47 @@ from algorithm.NormalAlgo import *
 from algorithm.NoiseAlgo import *
 from algorithm.CryptoAlgo import *
 
-# TOPOLOGIES = [Paper, Mesh, Ring, Star, FullyConnected, Line, Tree]
-TOPOLOGIES = [Paper]
-TIME = 60
-# Log Option
+TOPOLOGIES = [Paper, Mesh, Ring, Star, FullyConnected, Line, Tree]
+#  TOPOLOGIES = [Paper]
+#  TOPOLOGIES = [Ring]
+TIME = 50
+#  Log Option
 LOG = True
 # Plot Options
-SHOW = True
-SAVE = False
+SHOW = False
+SAVE = True
 
 def normal(topology):
-    tag = "{}".format(topology.name)
-
-    algo = NormalAlgo(topology.A, topology.agents, TIME)
+    algo = NormalAlgo(topology, TIME)
     algo.run(log=LOG)
-    algo.plot(show=SHOW, save=SAVE, tag=tag)
+    algo.plot(show=SHOW, save=SAVE)
 
 def noise(topology):
-    # phis = [float("0.{}".format(i)) for i in range(1, 10)] # 0 < φ < 1
-    phis = [0.9]
+    phis = [float("0.{}".format(i)) for i in range(1, 10)] # 0 < φ < 1
+    #  phis = [0.9]
 
     for phi in phis:
-        tag = "{}_φ{}".format(topology.name, phi)
-
-        algo = NoiseAlgo(topology.A, topology.agents, phi, TIME)
+        algo = NoiseAlgo(topology, phi, TIME)
         algo.run(log=LOG)
-        algo.plot(show=SHOW, save=SAVE, tag=tag)
+        algo.plot(show=SHOW, save=SAVE)
 
 def crypto(topology):
-    agents = [1, 2, 4, 8, 2]
-    epsilon = 0.5
+    epsilons = [float("0.{}".format(i)) for i in range(1, 10)] # 0 < ε < 1
+    #  epsilons = [0.5]
 
-    algo = CryptoAlgo(topology.A, agents, epsilon, 40) # fix this line later
-    algo.run(log=LOG)
+    for epsilon in epsilons:
+        algo = CryptoAlgo(topology, epsilon, TIME)
+        algo.run(log=LOG)
+        algo.plot(show=SHOW, save=SAVE)
 
 def main():
     for topology in TOPOLOGIES:
         topology = topology()
         #  prnt(topology)
 
-        #  normal(topology)
+        normal(topology)
         #  noise(topology)
-        crypto(topology)
+        #  crypto(topology)
 
 if __name__ == "__main__":
     main()

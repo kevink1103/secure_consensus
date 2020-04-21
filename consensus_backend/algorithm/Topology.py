@@ -25,6 +25,7 @@ class Paper(Topology):
             [1, 0, 1, 1, 1]
         ])
         self.agents = [-1.4, -0.8, 1.2, 0.7, -0.5]
+        self.lagents = [1, 2, 4, 8, 2]
 
 class Mesh(Topology):
     ##############
@@ -42,6 +43,7 @@ class Mesh(Topology):
             [1, 1, 0, 1, 1]
         ])
         self.agents = [-1.4, -0.8, 1.2, 0.7, -0.5]
+        self.lagents = [1, 2, 4, 8, 2]
 
 class Ring(Topology):
     ##############
@@ -59,6 +61,7 @@ class Ring(Topology):
             [1, 0, 0, 1, 2]
         ])
         self.agents = [-1.4, -0.8, 1.2, 0.7, -0.5]
+        self.lagents = [1, 2, 4, 8, 2]
 
 class Star(Topology):
     ##############
@@ -70,15 +73,16 @@ class Star(Topology):
     #   5   6    #
     ##############
     def __init__(self):
-        self.A = (1 / 6) * np.matrix([
-            [5, 0, 1, 0, 0, 0],
-            [0, 5, 1, 0, 0, 0],
-            [1, 1, 1, 1, 1, 1],
-            [0, 0, 1, 5, 0, 0],
-            [0, 0, 1, 0, 5, 0],
-            [0, 0, 1, 0, 0, 5],
+        self.A = (1 / 5) * np.matrix([
+            [4, 0, 1, 0, 0, 0],
+            [0, 4, 1, 0, 0, 0],
+            [1, 1, 0, 1, 1, 1],
+            [0, 0, 1, 4, 0, 0],
+            [0, 0, 1, 0, 4, 0],
+            [0, 0, 1, 0, 0, 4],
         ])
         self.agents = [-1.4, -0.8, 1.2, 0.7, -1.5, 1]
+        self.lagents = [1, 2, 4, 8, 2, 5]
 
 class FullyConnected(Topology):
     ############## Assume all connected to each other
@@ -90,15 +94,16 @@ class FullyConnected(Topology):
     #   5 - 6    #
     ##############
     def __init__(self):
-        self.A = (1 / 6) * np.matrix([
-            [1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1],
+        self.A = (1 / 5) * np.matrix([
+            [0, 1, 1, 1, 1, 1],
+            [1, 0, 1, 1, 1, 1],
+            [1, 1, 0, 1, 1, 1],
+            [1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 0, 1],
+            [1, 1, 1, 1, 1, 0],
         ])
         self.agents = [-1.4, -0.8, 1.2, 0.7, -1.5, 1]
+        self.lagents = [1, 2, 4, 8, 2, 5]
 
 class Line(Topology):
     #####################
@@ -114,6 +119,7 @@ class Line(Topology):
             [0, 0, 0, 1, 3],
         ])
         self.agents = [-1.4, -0.8, 1.2, 0.7, -0.5]
+        self.lagents = [1, 2, 4, 8, 2]
 
 class Tree(Topology):
     ###################
@@ -131,4 +137,5 @@ class Tree(Topology):
             [0, 0, 1, 0, 3],
         ])
         self.agents = [-1.4, -0.8, 1.2, 0.7, -0.5]
+        self.lagents = [1, 2, 4, 8, 2]
 
