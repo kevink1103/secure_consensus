@@ -13,10 +13,7 @@ import matplotlib.pyplot as plt
 from gmpy2 import mpz, mpfr, is_prime
 from pyprnt import prnt
 
-try:
-    from algorithm import Algorithm
-except:
-    from Algorithm import Algorithm
+from algorithm import Algorithm
 
 class SimplePaillier:
     def __init__(self):
@@ -85,7 +82,6 @@ class SimplePaillier:
         while True:
             p = self.__generate_prime_number()
             q = self.__generate_prime_number()
-            #  if p != q and math.gcd(p*q, (p-1)*(1-q)) == 1:
             if p != q:
                 break
         n = p * q
@@ -115,7 +111,7 @@ class CryptoAlgo(Algorithm):
         if log:
             prnt(self.__agents_history)
 
-    def plot(self, show=False, save=False):
+    def plot(self, show=False, save=False, dirname="result"):
         if len(self.__agents_history) == 0:
             raise AssertionError("empty data to plot")
 
@@ -147,7 +143,7 @@ class CryptoAlgo(Algorithm):
         plt.ylabel('xi(k)')
         plt.xlim([0, self.time])
         #  plt.ylim([-2, 10])
-        plt.legend()
+        plt.legend(fontsize="small")
         # chart 2
         plt.subplot(size[0], size[1], 2)
         plt.title('Encrypted Diff. State Vector')
@@ -163,12 +159,11 @@ class CryptoAlgo(Algorithm):
         plt.xlabel('k')
         plt.ylabel('log(εi(·))')
         plt.xlim([0, self.time])
-        plt.legend()
+        plt.legend(fontsize="small")
 
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 
         if save:
-            dirname = "result"
             filename = title
             plt.savefig(os.path.join(dirname, filename) + ".png")
         if show:
@@ -249,6 +244,12 @@ class CryptoAlgo(Algorithm):
                 # Record
                 if (i == 0 and j == 1):
                     ciphertexts.append(math.log(step6_v1))
+                    #  from decimal import Decimal
+                    #  temp = str(step6_v1)
+                    #  t = "{:.2E}".format(Decimal(temp))
+                    #  print(temp[:20])
+                    #  print(t)
+                    #  raise
                 if (i == 1 and j == 2):
                     ciphertexts.append(math.log(step6_v1))
                 if (i == 2 and j == 3):

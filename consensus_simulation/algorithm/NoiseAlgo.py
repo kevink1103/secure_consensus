@@ -33,7 +33,7 @@ class NoiseAlgo(Algorithm):
         if log:
             prnt(self.__agents_history)
 
-    def plot(self, show=False, save=False):
+    def plot(self, show=False, save=False, dirname="result"):
         if len(self.__noises) == 0 or len(self.__agents_history) == 1:
             raise AssertionError("empty data to plot")
 
@@ -68,8 +68,8 @@ class NoiseAlgo(Algorithm):
         plt.xlabel('k')
         plt.ylabel('xi(k)')
         plt.xlim([0, self.time])
-        plt.ylim([-3, 3])
-        plt.legend()
+        #  plt.ylim([-3, 3])
+        plt.legend(fontsize="small")
         # chart 2
         plt.subplot(size[0], size[1], 2)
         plt.title('Error Vector')
@@ -80,8 +80,8 @@ class NoiseAlgo(Algorithm):
         plt.xlabel('k')
         plt.ylabel('zi(k)')
         plt.xlim([0, self.time])
-        plt.ylim([-3, 3])
-        plt.legend()
+        #  plt.ylim([-3, 3])
+        plt.legend(fontsize="small")
         # chart 3
         plt.subplot(size[0], size[1], 3)
         plt.title('Noise Vector')
@@ -93,8 +93,8 @@ class NoiseAlgo(Algorithm):
         plt.xlabel('k')
         plt.ylabel('wi(k)')
         plt.xlim([0, self.time])
-        plt.ylim([-3, 3])
-        plt.legend()
+        #  plt.ylim([-3, 3])
+        plt.legend(fontsize="small")
         # chart 4
         plt.subplot(size[0], size[1], 4)
         plt.title('Noise Sum Vector')
@@ -105,13 +105,12 @@ class NoiseAlgo(Algorithm):
         plt.xlabel('k')
         plt.ylabel('sum(wi(k))')
         plt.xlim([0, self.time])
-        plt.ylim([-3, 3])
-        plt.legend()
+        #  plt.ylim([-3, 3])
+        plt.legend(fontsize="small")
 
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 
         if save:
-            dirname = "result"
             filename = title
             plt.savefig(os.path.join(dirname, filename) + ".png")
         if show:

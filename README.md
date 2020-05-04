@@ -6,14 +6,20 @@ My Final Year Project to study privacy preserving consensus algorithms.
 
 * Python 3
 * NumPy
+* SciPy
 * Matplotlib
-* Flask
+* gmpy2
 * PyPrnt (My Library!)
 
-## Project Structure
+## How to run
 
-* `consensus_backend`: Consensus Simulation Backend using Python Flask
-* `consensus_simulation`: Consensus Simulation Frontend using Vue.js integrated with Flask Backend
+```bash
+git clone [this repo]
+cd secure_consensus
+cd consensus_simulation
+pipenv install
+pipenv run python3 main.py
+```
 
 ## Author
 

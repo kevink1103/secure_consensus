@@ -24,7 +24,7 @@ class NormalAlgo(Algorithm):
         if log:
             prnt(self.__agents_history)
 
-    def plot(self, show=False, save=False):
+    def plot(self, show=False, save=False, dirname="result"):
         if len(self.__agents_history) == 0:
             raise AssertionError("empty data to plot")
 
@@ -56,8 +56,8 @@ class NormalAlgo(Algorithm):
         plt.xlabel('k')
         plt.ylabel('xi(k)')
         plt.xlim([0, self.time])
-        plt.ylim([-3, 3])
-        plt.legend()
+        #  plt.ylim([-3, 3])
+        plt.legend(fontsize="small")
         # chart 2
         plt.subplot(size[0], size[1], 2)
         plt.title('Error Vector')
@@ -68,13 +68,12 @@ class NormalAlgo(Algorithm):
         plt.xlabel('k')
         plt.ylabel('zi(k)')
         plt.xlim([0, self.time])
-        plt.ylim([-3, 3])
-        plt.legend()
+        #  plt.ylim([-3, 3])
+        plt.legend(fontsize="small")
 
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 
         if save:
-            dirname = "result"
             filename = title
             plt.savefig(os.path.join(dirname, filename) + ".png")
         if show:
